@@ -30,6 +30,8 @@ public:
 	Boid(float x, float y, ofColor color, const Mouser& m, const std::vector<Boid>& bs, Parameters& p);
 	ofVec2f seek(ofVec2f targetLocation) const;
 	ofVec2f separate();
+	ofVec2f align();
+	ofVec2f coalesce();
 	void update();
 	void draw() const;
 	ofVec2f get_location() const;

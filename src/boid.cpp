@@ -21,8 +21,10 @@ Boid::Boid(float x, float y, ofColor color, const Mouser& m, const std::vector<B
 
 void Boid::update() {
 	// Accelerate! Apply the acceleration to the Boid's velocity.
-	velocity += separate() * params.get_separation_multiplier();
+	velocity += separate()                 * params.get_separation_multiplier();
 	velocity += seek(mouse.get_location()) * params.get_mouse_seeking_multiplier();
+	velocity += align() * 0;
+	velocity += coalesce() * 0;
 
 	// Limit Boid to a maximum speed.
 	velocity.limit(MAX_SPEED);
@@ -101,6 +103,17 @@ ofVec2f Boid::separate() {
 	}
 
 	return summative_steering_vector;
+}
+
+ofVec2f Boid::align() {
+	ofVec2f sum_of_alignment_vectors;
+
+	return  sum_of_alignment_vectors;
+}
+
+ofVec2f Boid::coalesce() {
+	ofVec2f sum_of_cohesion_vectors;
+	return sum_of_cohesion_vectors;
 }
 
 /* Draw the Boid as a circle with line nose: O-
