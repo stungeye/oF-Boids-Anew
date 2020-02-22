@@ -20,11 +20,12 @@ Boid::Boid(float x, float y, ofColor color, const Mouser& m, const std::vector<B
 */
 
 void Boid::update() {
-	// Accelerate! Apply the acceleration to the Boid's velocity.
+	// Perceive the need for seeking, separation, alignment and cohesion.
+    // Accelerate! Add desired steering vectors to the Boid's velocity.
 	velocity += separate()                 * params.get_separation_multiplier();
 	velocity += seek(mouse.get_location()) * params.get_mouse_seeking_multiplier();
-	velocity += align() * 0;
-	velocity += coalesce() * 0;
+	velocity += align()                    * params.get_alignment_multiplier();
+	velocity += coalesce()                 * params.get_cohesion_multiplier();
 
 	// Limit Boid to a maximum speed.
 	velocity.limit(MAX_SPEED);
