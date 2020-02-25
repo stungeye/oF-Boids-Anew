@@ -115,9 +115,30 @@ ofVec2f Boid::separate() {
 }
 
 ofVec2f Boid::align() {
+	float visual_field_radius = 50;
 	ofVec2f sum_of_alignment_vectors;
+	int count = 0;
 
-	return  sum_of_alignment_vectors;
+	for (auto boid : boids) {
+		ofVec2f line_between_boids = get_location() - boid.get_location();
+		float distance = line_between_boids.length();
+
+		if ((distance > 0) && (distance < visual_field_radius)) {
+			sum_of_alignment_vectors += boid.get_velocity();
+			count++;
+		}
+	}
+
+	ofVec2f summative_steering_vector;
+	if (count > 0) {
+		sum_of_alignment_vectors /= count;
+		sum_of_alignment_vectors.normalize();
+		sum_of_alignment_vectors *= MAX_SPEED / 2;
+		summative_steering_vector = sum_of_alignment_vectors - velocity;
+		summative_steering_vector.limit(MAX_FORCE);
+	}
+
+	return summative_steering_vector;
 }
 
 ofVec2f Boid::coalesce() {
@@ -171,6 +192,10 @@ void Boid::draw() const {
 
 ofVec2f Boid::get_location() const {
 	return location;
+}
+
+ofVec2f Boid::get_velocity() const {
+	return velocity;
 }
 
 /* Private Helper - Boid's Heading in Degrees */

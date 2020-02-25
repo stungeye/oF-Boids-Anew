@@ -35,6 +35,7 @@ public:
 	void update();
 	void draw() const;
 	ofVec2f get_location() const;
+	ofVec2f get_velocity() const;
 private:
 	float heading_in_degrees() const;
 };
