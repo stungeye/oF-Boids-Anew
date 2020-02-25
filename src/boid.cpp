@@ -72,7 +72,11 @@ ofVec2f Boid::seek(ofVec2f targetLocation) const {
 }
 
 ofVec2f Boid::separate() {
-	//debug_boids.clear();
+
+	if (params.get_debug_separation_lines()) {
+		debug_boids.clear();
+	}
+
 	float desired_separation = DRAW_RADIUS * params.get_separation_radius_multiplier();
 	ofVec2f sum_of_streering_vectors;
 
@@ -84,7 +88,11 @@ ofVec2f Boid::separate() {
 		float distance = line_between_boids.length();
 		
 		if ((distance > 0) && (distance < desired_separation)) {
-			//debug_boids.push_back(pos);
+
+			if (params.get_debug_separation_lines()) {
+				debug_boids.push_back(pos);
+			}
+
 			ofVec2f steering_unit_vector = line_between_boids.normalize();
 			ofVec2f steering_vector = steering_unit_vector / distance;
 			sum_of_streering_vectors += steering_vector;
@@ -144,14 +152,19 @@ void Boid::draw() const {
 	ofDrawLine(0, 0, noseLength, 0); // Draw the "nose" stroke
 
 	ofPopMatrix(); // Pop the saved global coordinates
-	/*
-	ofSetLineWidth(1);
-	ofVec2f l = get_location();
-	for(auto boid_num : debug_boids) {
-		ofVec2f l2 = boids[boid_num].get_location();
-		ofDrawLine(l.x, l.y, l2.x, l2.y);
+
+
+	if (params.get_debug_separation_lines()) {
+		ofVec2f l = get_location();
+
+		ofSetLineWidth(3);
+        ofSetColor(ofColor::darkSlateGray); // Fill is this->color
+
+		for (auto boid_num : debug_boids) {
+			ofVec2f l2 = boids[boid_num].get_location();
+			ofDrawLine(l.x, l.y, l2.x, l2.y);
+		}
 	}
-	*/
 }
 
 /* Public Getter - Boid's Location */

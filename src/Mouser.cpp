@@ -42,6 +42,7 @@ void Mouser::draw(ofVec2f otherLocation)
 /* If you don't care about collision colour change here's a simpler draw(). */
 
 void Mouser::draw() {
+	ofSetLineWidth(DRAW_STROKE); // Set stroke witdh for lines
 	ofSetColor(ofColor::black);                                      // pseudo-stroke is black
 	ofDrawCircle(location.x, location.y, DRAW_RADIUS + DRAW_STROKE); // draw stroke
 	ofSetColor(DEFAULT_COLOR);                                       // fill is default color
