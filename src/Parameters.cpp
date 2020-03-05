@@ -8,7 +8,9 @@ Parameters::Parameters() {
 	gui_panel.add(separation_multiplier.set("Separation Multiplier", 1.5, 0, 3));
 	gui_panel.add(cohesion_multiplier.set("Cohesion Multiplier", 1, 0, 3));
 	gui_panel.add(alignment_multiplier.set("Alignment Multiplier", 1, 0, 3));
-	gui_panel.add(debug_separation_lines.set("Debug Separation Lines", false));
+	gui_panel.add(are_separation_lines_showing.set("Show Separation Lines?", false));
+	gui_panel.add(is_wrap_around.set("Do Boids Wrap Around?", true));
+	gui_panel.add(is_mouse_seeking_enabled.set("Are Boids Seeking Mouse?", false));
 }
 
 void Parameters::draw() {
@@ -35,7 +37,15 @@ float Parameters::get_alignment_multiplier() const {
 	return alignment_multiplier;
 }
 
-float Parameters::get_debug_separation_lines() const {
-	return debug_separation_lines;
+bool Parameters::get_is_wrap_around() const {
+	return is_wrap_around;
+}
+
+bool Parameters::get_is_mouse_seeking_enabled() const {
+	return is_mouse_seeking_enabled;
+}
+
+bool Parameters::get_are_separation_lines_showing() const {
+	return are_separation_lines_showing;
 }
 

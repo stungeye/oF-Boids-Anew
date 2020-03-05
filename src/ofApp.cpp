@@ -12,8 +12,8 @@ void ofApp::setup(){
 
 	for (auto i = 0; i < NUMBER_OF_BOIDS; ++i) {
 		boids.push_back(Boid(
-			ofRandomHeight(),
-			ofRandomWidth(),
+			ofGetWidth() / 2,//	ofRandomWidth(),
+			ofGetHeight() / 2,//	ofRandomHeight(),
 			ofColor::darkorange, // fill color
 			the_mouse,            // the Mouser
 			boids,				 // the boids vector
@@ -26,6 +26,13 @@ void ofApp::setup(){
 void ofApp::update(){
 	// Update the mouse and the boids.
 	the_mouse.update();
+
+	if (params.get_is_wrap_around()) {
+		for (auto& boid : boids) {
+			boid.wrap_around();
+		}
+	}
+
 	for (auto& boid : boids) {
 		boid.update();
 	}

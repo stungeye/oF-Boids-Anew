@@ -9,6 +9,7 @@ Boid::Boid(float x, float y, ofColor color, const Mouser& m, const std::vector<B
 	mouse(m), boids(bs), params(p)
 {
 	location.set(x, y);
+	velocity.set(ofRandomf(), ofRandomf());
 	this->color = color;
 }
 
@@ -22,16 +23,27 @@ Boid::Boid(float x, float y, ofColor color, const Mouser& m, const std::vector<B
 void Boid::update() {
 	// Perceive the need for seeking, separation, alignment and cohesion.
     // Accelerate! Add desired steering vectors to the Boid's velocity.
-	velocity += separate()                 * params.get_separation_multiplier();
-	velocity += seek(mouse.get_location()) * params.get_mouse_seeking_multiplier();
-	velocity += align()                    * params.get_alignment_multiplier();
-	velocity += coalesce()                 * params.get_cohesion_multiplier();
+
+	ofVec2f acceleration;
+	
+	acceleration += separate()  * params.get_separation_multiplier();
+	acceleration += align()     * params.get_alignment_multiplier();
+	acceleration += coalesce()  * params.get_cohesion_multiplier();
+
+	if (params.get_is_mouse_seeking_enabled()) {
+		acceleration += seek(mouse.get_location(), true) * params.get_mouse_seeking_multiplier();
+	}
+
+	acceleration.limit(MAX_FORCE);
+
+	velocity += acceleration;
 
 	// Limit Boid to a maximum speed.
 	velocity.limit(MAX_SPEED);
 
 	// Move! 
 	location += velocity;
+
 }
 
 /* Boids seek a target location by moving while correcting for speed and angle.
@@ -44,7 +56,7 @@ void Boid::update() {
 
 */
 
-ofVec2f Boid::seek(ofVec2f targetLocation) const {
+ofVec2f Boid::seek(ofVec2f targetLocation, bool slowApproach) const {
 	// Delta between target location and current location
 	ofVec2f desireLine = targetLocation - location;
 
@@ -53,7 +65,7 @@ ofVec2f Boid::seek(ofVec2f targetLocation) const {
 
 	// Starting from a max, scale down the boid's speed, as we approach target.
 	float approachSpeed = MAX_SPEED;
-	if (distanceToCover < SLOW_APPROACH_RADIUS) {
+	if (slowApproach && (distanceToCover < SLOW_APPROACH_RADIUS)) {
 		approachSpeed *= distanceToCover / SLOW_APPROACH_RADIUS;
 	}
 
@@ -73,7 +85,7 @@ ofVec2f Boid::seek(ofVec2f targetLocation) const {
 
 ofVec2f Boid::separate() {
 
-	if (params.get_debug_separation_lines()) {
+	if (params.get_are_separation_lines_showing()) {
 		debug_boids.clear();
 	}
 
@@ -85,11 +97,11 @@ ofVec2f Boid::separate() {
 
 	for(auto boid : boids) {
 		ofVec2f line_between_boids = get_location() - boid.get_location();
-		float distance = line_between_boids.length();
+		const float distance = line_between_boids.length();
 		
 		if ((distance > 0) && (distance < desired_separation)) {
 
-			if (params.get_debug_separation_lines()) {
+			if (params.get_are_separation_lines_showing()) {
 				debug_boids.push_back(pos);
 			}
 
@@ -105,6 +117,9 @@ ofVec2f Boid::separate() {
 
 	if (count > 0) {
 		sum_of_streering_vectors /= count;
+	}
+
+	if (sum_of_streering_vectors.length() > 0) {
 		sum_of_streering_vectors.normalize();
 		sum_of_streering_vectors *= MAX_SPEED;
 		summative_steering_vector = sum_of_streering_vectors - velocity;
@@ -115,13 +130,13 @@ ofVec2f Boid::separate() {
 }
 
 ofVec2f Boid::align() {
-	float visual_field_radius = 50;
+	float visual_field_radius = 100;
 	ofVec2f sum_of_alignment_vectors;
 	int count = 0;
 
 	for (auto boid : boids) {
-		ofVec2f line_between_boids = get_location() - boid.get_location();
-		float distance = line_between_boids.length();
+		ofVec2f line_between_boids = location - boid.get_location();
+		const float distance = line_between_boids.length();
 
 		if ((distance > 0) && (distance < visual_field_radius)) {
 			sum_of_alignment_vectors += boid.get_velocity();
@@ -133,7 +148,7 @@ ofVec2f Boid::align() {
 	if (count > 0) {
 		sum_of_alignment_vectors /= count;
 		sum_of_alignment_vectors.normalize();
-		sum_of_alignment_vectors *= MAX_SPEED / 2;
+		sum_of_alignment_vectors *= MAX_SPEED;
 		summative_steering_vector = sum_of_alignment_vectors - velocity;
 		summative_steering_vector.limit(MAX_FORCE);
 	}
@@ -142,8 +157,37 @@ ofVec2f Boid::align() {
 }
 
 ofVec2f Boid::coalesce() {
-	ofVec2f sum_of_cohesion_vectors;
-	return sum_of_cohesion_vectors;
+	float visual_field_radius = 200;
+	ofVec2f sum_of_location_vectors;
+	int count = 0;
+
+	for (auto boid : boids) {
+		ofVec2f line_between_boids = location - boid.get_location();
+		float distance = line_between_boids.length();
+
+		if ((distance > 0) && (distance < visual_field_radius)) {
+			sum_of_location_vectors += boid.get_location();
+			count++;
+		}
+	}
+
+	ofVec2f cohesion_steering_vector;
+
+	if (count > 0) {
+		return seek(sum_of_location_vectors / count, false);
+	}
+
+	return cohesion_steering_vector;
+}
+
+void Boid::wrap_around() {
+	const float width = ofGetWidth();
+	const float height = ofGetHeight();
+	
+	if (location.x < -DRAW_RADIUS)         location.x = width + DRAW_RADIUS;
+	if (location.y < -DRAW_RADIUS)         location.y = height + DRAW_RADIUS;
+	if (location.x > width + DRAW_RADIUS)  location.x = -DRAW_RADIUS;
+	if (location.y > height + DRAW_RADIUS) location.y = -DRAW_RADIUS;
 }
 
 /* Draw the Boid as a circle with line nose: O-
@@ -175,15 +219,20 @@ void Boid::draw() const {
 	ofPopMatrix(); // Pop the saved global coordinates
 
 
-	if (params.get_debug_separation_lines()) {
-		ofVec2f l = get_location();
+	if (params.get_are_separation_lines_showing()) {
 
 		ofSetLineWidth(3);
         ofSetColor(ofColor::darkSlateGray); // Fill is this->color
 
 		for (auto boid_num : debug_boids) {
 			ofVec2f l2 = boids[boid_num].get_location();
-			ofDrawLine(l.x, l.y, l2.x, l2.y);
+			float length = (location - l2).length();
+			float desired_separation = DRAW_RADIUS * params.get_separation_radius_multiplier();
+			if (length > (desired_separation + MAX_SPEED)) {
+				std::cout << location.x << "," << location.y << " - ";
+				std::cout << l2.x << "," << l2.y <<  " = " << length << "\n";
+			}
+			ofDrawLine(location.x, location.y, l2.x, l2.y);
 		}
 	}
 }

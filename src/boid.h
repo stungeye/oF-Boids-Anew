@@ -8,13 +8,13 @@
 class Boid
 {
 	/* Play with these constants to tweak the seeking. */
-	const float MAX_SPEED = 7;
-	const float MAX_FORCE = 0.25;
+	const float MAX_SPEED = 5;
+	const float MAX_FORCE = 0.1;
 	const float SLOW_APPROACH_RADIUS = 100;
 
 	/* Want bigger Boids? Tiny ones? */
-	const float DRAW_RADIUS = 10;
-	const float DRAW_STROKE = 4;
+	const float DRAW_RADIUS = 5;
+	const float DRAW_STROKE = 2;
 
 	/* Private Properties */
 	ofVec2f location;
@@ -28,14 +28,15 @@ class Boid
 
 public:
 	Boid(float x, float y, ofColor color, const Mouser& m, const std::vector<Boid>& bs, Parameters& p);
-	ofVec2f seek(ofVec2f targetLocation) const;
-	ofVec2f separate();
-	ofVec2f align();
-	ofVec2f coalesce();
 	void update();
 	void draw() const;
 	ofVec2f get_location() const;
 	ofVec2f get_velocity() const;
+	void wrap_around();
 private:
+	ofVec2f seek(ofVec2f targetLocation, bool slowApproach) const;
+	ofVec2f separate();
+	ofVec2f align();
+	ofVec2f coalesce();
 	float heading_in_degrees() const;
 };

@@ -10,7 +10,9 @@ class Parameters {
 	ofParameter<float> mouse_seeking_multiplier;
 	ofParameter<float> cohesion_multiplier;
 	ofParameter<float> alignment_multiplier;
-	ofParameter<bool> debug_separation_lines;
+	ofParameter<bool> are_separation_lines_showing;
+	ofParameter<bool> is_wrap_around;
+	ofParameter<bool> is_mouse_seeking_enabled;
 	
 public:
 	Parameters();
@@ -20,5 +22,7 @@ public:
 	float get_separation_multiplier() const;
 	float get_cohesion_multiplier() const;
 	float get_alignment_multiplier() const;
-	float get_debug_separation_lines() const;
+	bool get_are_separation_lines_showing() const;
+	bool get_is_wrap_around() const;
+	bool get_is_mouse_seeking_enabled() const;
 };
