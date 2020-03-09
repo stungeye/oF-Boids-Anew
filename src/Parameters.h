@@ -22,6 +22,7 @@ class Parameters {
 	ofParameter<bool> is_wrap_around;
 	ofParameter<bool> is_mouse_seeking_enabled;
 	ofParameter<bool> are_beaks_visible;
+	ofParameter<bool> are_steering_behaviours_banded;
 
 	ofxButton randomize;
 	
@@ -45,6 +46,7 @@ public:
 	bool get_is_wrap_around() const;
 	bool get_is_mouse_seeking_enabled() const;
 	bool get_are_beaks_visible() const;
+	bool get_are_steering_behaviours_banded() const;
 
 private:
 	void randomize_parameters();

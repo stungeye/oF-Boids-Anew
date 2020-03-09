@@ -37,6 +37,6 @@ private:
 	ofVec2f seek(ofVec2f target_location, bool slow_approach) const;
 	ofVec2f separate();
 	ofVec2f align() const;
-	ofVec2f coalesce() const;
+	ofVec2f coalesce(bool maximize_distance) const;
 	float heading_in_degrees() const;
 };

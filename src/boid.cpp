@@ -24,19 +24,27 @@ void Boid::update() {
 	// Accelerate! Add desired steering vectors to the Boid's velocity.
 
 	ofVec2f acceleration;
+	const auto max_force = params.get_max_force();
 
 	acceleration += separate() * params.get_separation_multiplier();
 	acceleration += align() * params.get_alignment_multiplier();
-	acceleration += coalesce() * params.get_cohesion_multiplier();
+	acceleration += coalesce(false) * params.get_cohesion_multiplier();
 
 	if (params.get_is_mouse_seeking_enabled()) {
 		acceleration += seek(mouse.get_location(), true) * params.get_mouse_seeking_multiplier();
 	}
 
-	acceleration.limit(3 * params.get_max_force());
+	acceleration.limit(3 * max_force);
 
-	velocity += acceleration;
-
+	// Add acceleration if we've got some.
+	if (acceleration.length() != 0) {
+		velocity += acceleration;
+	} else if (velocity.length() != params.get_max_speed()) {
+		// Unless already traveling at full speed, allow lone boids with
+		// no steering forces to do a max distance coalesce.
+		// This could also be handled by seeking the closest boid.
+		velocity += coalesce(true);
+	}
 	// Limit Boid to a maximum speed.
 	velocity.limit(params.get_max_speed());
 
@@ -125,13 +133,14 @@ ofVec2f Boid::separate() {
 }
 
 ofVec2f Boid::align() const {
+	const auto minimum_distance = params.get_are_steering_behaviours_banded() ? params.get_separation_radius() : 0;
 	ofVec2f sum_of_alignment_vectors;
 
 	for (const auto& boid : boids) {
 		auto line_between_boids = location - boid.get_location();
 		const float distance = line_between_boids.length();
 
-		if ((distance > 0) && (distance < params.get_alignment_radius())) {
+		if ((distance > minimum_distance) && (distance < params.get_alignment_radius())) {
 			sum_of_alignment_vectors += boid.get_velocity();
 		}
 	}
@@ -147,7 +156,9 @@ ofVec2f Boid::align() const {
 	return summative_steering_vector;
 }
 
-ofVec2f Boid::coalesce() const {
+ofVec2f Boid::coalesce(bool maximize_distance) const {
+	const auto minimum_distance = params.get_are_steering_behaviours_banded() ? params.get_alignment_radius() : 0;
+	const auto maximum_distance = maximize_distance ? ofGetWidth() : params.get_cohesion_radius();
 	ofVec2f sum_of_location_vectors;
 	auto count = 0.0;
 
@@ -155,7 +166,7 @@ ofVec2f Boid::coalesce() const {
 		auto line_between_boids = location - boid.get_location();
 		const auto distance = line_between_boids.length();
 
-		if ((distance > 0) && (distance < params.get_cohesion_radius())) {
+		if ((distance > minimum_distance) && (distance < maximum_distance)) {
 			sum_of_location_vectors += boid.get_location();
 			count++;
 		}

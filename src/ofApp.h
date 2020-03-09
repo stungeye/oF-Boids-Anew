@@ -9,7 +9,7 @@
 #include <vector>
 
 class ofApp : public ofBaseApp{
-	const int NUMBER_OF_BOIDS = 350;
+	const int NUMBER_OF_BOIDS = 200;
 
 	// A vector of Boids and a Mouser.
 	std::vector<Boid> boids;
