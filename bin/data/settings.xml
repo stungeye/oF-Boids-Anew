@@ -1,7 +1,3 @@
 <?xml version="1.0"?>
-<group>
-	<Separation_Radius_Multiplier>4</Separation_Radius_Multiplier>
-	<Mouse_Seeking_Multiplier>0.25</Mouse_Seeking_Multiplier>
-	<Separation_Multiplier>1</Separation_Multiplier>
-	<Cohesion_Multiplier>1</Cohesion_Multiplier>
-</group>
+<Boid_Parameters>
+</Boid_Parameters>

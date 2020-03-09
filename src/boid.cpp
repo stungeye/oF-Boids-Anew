@@ -86,7 +86,6 @@ ofVec2f Boid::separate() {
 		debug_boids.clear();
 	}
 
-	const auto desired_separation = DRAW_RADIUS * params.get_separation_radius_multiplier();
 	ofVec2f sum_of_steering_vectors;
 
 	auto count = 0;
@@ -96,7 +95,7 @@ ofVec2f Boid::separate() {
 		auto line_between_boids = get_location() - boid.get_location();
 		const auto distance = line_between_boids.length();
 
-		if ((distance > 0) && (distance < desired_separation)) {
+		if ((distance > 0) && (distance < params.get_separation_radius())) {
 
 			if (params.get_are_separation_lines_showing()) {
 				debug_boids.push_back(pos);
@@ -126,14 +125,13 @@ ofVec2f Boid::separate() {
 }
 
 ofVec2f Boid::align() const {
-	const auto visual_field_radius = 100;
 	ofVec2f sum_of_alignment_vectors;
 
 	for (const auto& boid : boids) {
 		auto line_between_boids = location - boid.get_location();
 		const float distance = line_between_boids.length();
 
-		if ((distance > 0) && (distance < visual_field_radius)) {
+		if ((distance > 0) && (distance < params.get_alignment_radius())) {
 			sum_of_alignment_vectors += boid.get_velocity();
 		}
 	}
@@ -150,7 +148,6 @@ ofVec2f Boid::align() const {
 }
 
 ofVec2f Boid::coalesce() const {
-	const float visual_field_radius = 500;
 	ofVec2f sum_of_location_vectors;
 	auto count = 0.0;
 
@@ -158,7 +155,7 @@ ofVec2f Boid::coalesce() const {
 		auto line_between_boids = location - boid.get_location();
 		const auto distance = line_between_boids.length();
 
-		if ((distance > 0) && (distance < visual_field_radius)) {
+		if ((distance > 0) && (distance < params.get_cohesion_radius())) {
 			sum_of_location_vectors += boid.get_location();
 			count++;
 		}
@@ -230,7 +227,6 @@ void Boid::draw() const {
 		for (auto boid_num : debug_boids) {
 			const auto l2 = boids[boid_num].get_location();
 			auto length = (location - l2).length();
-			auto desired_separation = params.get_separation_radius_multiplier() * DRAW_RADIUS;
 			ofDrawLine(location.x, location.y, l2.x, l2.y);
 		}
 	}

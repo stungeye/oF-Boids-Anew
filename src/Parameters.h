@@ -5,7 +5,11 @@
 class Parameters {
 	
 	ofxPanel gui_panel;
-	ofParameter<int> separation_radius_multiplier;
+
+	ofParameter<int> separation_radius;
+	ofParameter<int> cohesion_radius;
+	ofParameter<int> alignment_radius;
+
 	ofParameter<float> separation_multiplier;
 	ofParameter<float> mouse_seeking_multiplier;
 	ofParameter<float> cohesion_multiplier;
@@ -18,11 +22,17 @@ class Parameters {
 	ofParameter<bool> is_wrap_around;
 	ofParameter<bool> is_mouse_seeking_enabled;
 	ofParameter<bool> are_beaks_visible;
+
+	ofxButton randomize;
 	
 public:
 	Parameters();
 	void draw();
-	int get_separation_radius_multiplier() const;
+
+	int get_separation_radius() const;
+	int get_cohesion_radius() const;
+	int get_alignment_radius() const;
+
 	float get_mouse_seeking_multiplier() const;
 	float get_separation_multiplier() const;
 	float get_cohesion_multiplier() const;
@@ -35,4 +45,7 @@ public:
 	bool get_is_wrap_around() const;
 	bool get_is_mouse_seeking_enabled() const;
 	bool get_are_beaks_visible() const;
+
+private:
+	void randomize_parameters();
 };
