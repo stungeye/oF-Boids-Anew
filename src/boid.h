@@ -9,7 +9,7 @@ class Boid
 {
 	/* Play with these constants to tweak the seeking. */
 	const float MAX_SPEED = 5;
-	const float MAX_FORCE = 0.1;
+	const float MAX_FORCE = 0.2;
 	const float SLOW_APPROACH_RADIUS = 100;
 
 	/* Want bigger Boids? Tiny ones? */
@@ -34,7 +34,7 @@ public:
 	ofVec2f get_velocity() const;
 	void wrap_around();
 private:
-	ofVec2f seek(ofVec2f targetLocation, bool slowApproach) const;
+	ofVec2f seek(ofVec2f target_location, bool slow_approach) const;
 	ofVec2f separate();
 	ofVec2f align();
 	ofVec2f coalesce();

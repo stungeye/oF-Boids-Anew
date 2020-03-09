@@ -34,12 +34,12 @@ void Boid::update() {
 		acceleration += seek(mouse.get_location(), true) * params.get_mouse_seeking_multiplier();
 	}
 
-	acceleration.limit(MAX_FORCE);
+	acceleration.limit(3 * params.get_max_force());
 
 	velocity += acceleration;
 
 	// Limit Boid to a maximum speed.
-	velocity.limit(MAX_SPEED);
+	velocity.limit(params.get_max_speed());
 
 	// Move! 
 	location += velocity;
@@ -56,31 +56,29 @@ void Boid::update() {
 
 */
 
-ofVec2f Boid::seek(ofVec2f targetLocation, bool slowApproach) const {
+ofVec2f Boid::seek(ofVec2f target_location, bool slow_approach) const {
 	// Delta between target location and current location
-	ofVec2f desireLine = targetLocation - location;
+	const auto desire_line = target_location - location;
 
 	// The length of the distance to cover.
-	float distanceToCover = desireLine.length();
+	const auto distance_to_cover = desire_line.length();
 
 	// Starting from a max, scale down the boid's speed, as we approach target.
-	float approachSpeed = MAX_SPEED;
-	if (slowApproach && (distanceToCover < SLOW_APPROACH_RADIUS)) {
-		approachSpeed *= distanceToCover / SLOW_APPROACH_RADIUS;
+	auto approach_speed = params.get_max_speed();
+	if (slow_approach && (distance_to_cover < SLOW_APPROACH_RADIUS)) {
+		approach_speed *= distance_to_cover / SLOW_APPROACH_RADIUS;
 	}
 
 	// Boid desires to move at full speed towards the target location.
-	ofVec2f steeringUnitVector = desireLine.normalize();
-	ofVec2f fullSpeedTowardsTarget = steeringUnitVector * approachSpeed;
+	auto steering_unit_vector(desire_line);
+	steering_unit_vector.normalize();
+	const auto approach_speed_towards_target = steering_unit_vector * approach_speed;
 
 	// What's the difference between full speed towards target and boid's current velocity?
-	ofVec2f velocityCorrectedSteeringForce = fullSpeedTowardsTarget - velocity;
+	auto velocity_corrected_steering_force = approach_speed_towards_target - velocity;
 
 	// Limit steering force to a maximum.
-	velocityCorrectedSteeringForce.limit(MAX_FORCE);
-
-	// accelerate according to the steering force.
-	return velocityCorrectedSteeringForce;
+	return velocity_corrected_steering_force.limit(params.get_max_force());
 }
 
 ofVec2f Boid::separate() {
@@ -89,15 +87,15 @@ ofVec2f Boid::separate() {
 		debug_boids.clear();
 	}
 
-	float desired_separation = DRAW_RADIUS * params.get_separation_radius_multiplier();
-	ofVec2f sum_of_streering_vectors;
+	const auto desired_separation = DRAW_RADIUS * params.get_separation_radius_multiplier();
+	ofVec2f sum_of_steering_vectors;
 
-	int count = 0;
-	int pos = 0;
+	auto count = 0;
+	auto pos = 0;
 
 	for(auto boid : boids) {
-		ofVec2f line_between_boids = get_location() - boid.get_location();
-		const float distance = line_between_boids.length();
+		auto line_between_boids = get_location() - boid.get_location();
+		const auto distance = line_between_boids.length();
 		
 		if ((distance > 0) && (distance < desired_separation)) {
 
@@ -105,9 +103,8 @@ ofVec2f Boid::separate() {
 				debug_boids.push_back(pos);
 			}
 
-			ofVec2f steering_unit_vector = line_between_boids.normalize();
-			ofVec2f steering_vector = steering_unit_vector / distance;
-			sum_of_streering_vectors += steering_vector;
+			const auto steering_vector = line_between_boids.normalize() / distance;
+			sum_of_steering_vectors += steering_vector;
 			count++;
 		}
 		pos++;
@@ -116,54 +113,51 @@ ofVec2f Boid::separate() {
 	ofVec2f summative_steering_vector;
 
 	if (count > 0) {
-		sum_of_streering_vectors /= count;
+		sum_of_steering_vectors /= count;
 	}
 
-	if (sum_of_streering_vectors.length() > 0) {
-		sum_of_streering_vectors.normalize();
-		sum_of_streering_vectors *= MAX_SPEED;
-		summative_steering_vector = sum_of_streering_vectors - velocity;
-		summative_steering_vector.limit(MAX_FORCE);
+	if (sum_of_steering_vectors.length() > 0) {
+		sum_of_steering_vectors.normalize();
+		sum_of_steering_vectors *= params.get_max_speed();
+		summative_steering_vector = sum_of_steering_vectors - velocity;
+		summative_steering_vector.limit(params.get_max_force());
 	}
 
 	return summative_steering_vector;
 }
 
 ofVec2f Boid::align() {
-	float visual_field_radius = 100;
+	const auto visual_field_radius = 100;
 	ofVec2f sum_of_alignment_vectors;
-	int count = 0;
 
 	for (auto boid : boids) {
-		ofVec2f line_between_boids = location - boid.get_location();
+		auto line_between_boids = location - boid.get_location();
 		const float distance = line_between_boids.length();
 
 		if ((distance > 0) && (distance < visual_field_radius)) {
 			sum_of_alignment_vectors += boid.get_velocity();
-			count++;
 		}
 	}
 
 	ofVec2f summative_steering_vector;
-	if (count > 0) {
-		sum_of_alignment_vectors /= count;
+	if (sum_of_alignment_vectors.length() > 0) {
 		sum_of_alignment_vectors.normalize();
-		sum_of_alignment_vectors *= MAX_SPEED;
+		sum_of_alignment_vectors *= params.get_max_speed();
 		summative_steering_vector = sum_of_alignment_vectors - velocity;
-		summative_steering_vector.limit(MAX_FORCE);
+		summative_steering_vector.limit(params.get_max_force());
 	}
 
 	return summative_steering_vector;
 }
 
 ofVec2f Boid::coalesce() {
-	float visual_field_radius = 200;
+	const float visual_field_radius = 500;
 	ofVec2f sum_of_location_vectors;
-	int count = 0;
+	auto count = 0.0;
 
 	for (auto boid : boids) {
-		ofVec2f line_between_boids = location - boid.get_location();
-		float distance = line_between_boids.length();
+		auto line_between_boids = location - boid.get_location();
+		const auto distance = line_between_boids.length();
 
 		if ((distance > 0) && (distance < visual_field_radius)) {
 			sum_of_location_vectors += boid.get_location();
@@ -171,18 +165,16 @@ ofVec2f Boid::coalesce() {
 		}
 	}
 
-	ofVec2f cohesion_steering_vector;
-
 	if (count > 0) {
 		return seek(sum_of_location_vectors / count, false);
 	}
 
-	return cohesion_steering_vector;
+	return ofVec2f(0,0);
 }
 
 void Boid::wrap_around() {
-	const float width = ofGetWidth();
-	const float height = ofGetHeight();
+	const auto width = ofGetWidth();
+	const auto height = ofGetHeight();
 	
 	if (location.x < -DRAW_RADIUS)         location.x = width + DRAW_RADIUS;
 	if (location.y < -DRAW_RADIUS)         location.y = height + DRAW_RADIUS;
@@ -200,21 +192,25 @@ void Boid::wrap_around() {
 */
 
 void Boid::draw() const {
-	// Length of boid's nose depends on radius and current velocity.
-	float noseLength = DRAW_RADIUS * 1.1 + 3 * velocity.length();
 
+	ofSetLineWidth(DRAW_STROKE); // Set stroke witdh for lines
+	
 	ofPushMatrix(); // Save the global coordinates
 
 	ofTranslate(location.x, location.y); // Translate coords to the boid's position
-	ofRotateZDeg(heading_in_degrees()); // Rotate coordinate system to its heading
 
-	ofSetLineWidth(DRAW_STROKE); // Set stroke witdh for lines
 	ofSetColor(ofColor::black); // Stroke is black
 	ofDrawCircle(0, 0, DRAW_RADIUS + DRAW_STROKE); // Draw the "body" stroke
 	ofSetColor(color); // Fill is this->color
 	ofDrawCircle(0, 0, DRAW_RADIUS); // Draw the "body" fill
 	ofSetColor(ofColor::black); // Stroke is black 
-	ofDrawLine(0, 0, noseLength, 0); // Draw the "nose" stroke
+
+	if (params.get_are_beaks_visible()) {
+		// Length of boid's nose depends on radius and current velocity.
+		const auto noseLength = DRAW_RADIUS * 1.1 + 3 * velocity.length();
+		ofRotateZDeg(heading_in_degrees()); // Rotate coordinate system to its heading
+		ofDrawLine(0, 0, noseLength, 0); // Draw the "nose" stroke
+	}
 
 	ofPopMatrix(); // Pop the saved global coordinates
 
@@ -225,13 +221,9 @@ void Boid::draw() const {
         ofSetColor(ofColor::darkSlateGray); // Fill is this->color
 
 		for (auto boid_num : debug_boids) {
-			ofVec2f l2 = boids[boid_num].get_location();
-			float length = (location - l2).length();
-			float desired_separation = DRAW_RADIUS * params.get_separation_radius_multiplier();
-			if (length > (desired_separation + MAX_SPEED)) {
-				std::cout << location.x << "," << location.y << " - ";
-				std::cout << l2.x << "," << l2.y <<  " = " << length << "\n";
-			}
+			const auto l2 = boids[boid_num].get_location();
+			auto length = (location - l2).length();
+			auto desired_separation = params.get_separation_radius_multiplier() * DRAW_RADIUS;
 			ofDrawLine(location.x, location.y, l2.x, l2.y);
 		}
 	}
