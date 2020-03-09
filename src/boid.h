@@ -36,7 +36,7 @@ public:
 private:
 	ofVec2f seek(ofVec2f target_location, bool slow_approach) const;
 	ofVec2f separate();
-	ofVec2f align();
-	ofVec2f coalesce();
+	ofVec2f align() const;
+	ofVec2f coalesce() const;
 	float heading_in_degrees() const;
 };
