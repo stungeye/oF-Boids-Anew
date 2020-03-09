@@ -12,8 +12,8 @@ void ofApp::setup() {
 
 	for (auto i = 0; i < NUMBER_OF_BOIDS; ++i) {
 		boids.emplace_back(
-			ofGetWidth() / 2, //	ofRandomWidth(),
-			ofGetHeight() / 2, //	ofRandomHeight(),
+			ofRandomWidth(),
+			ofRandomHeight(),
 			ofColor::darkorange, // fill color
 			the_mouse, // the Mouser
 			boids, // the boids vector

@@ -171,18 +171,19 @@ ofVec2f Boid::coalesce() const {
 void Boid::wrap_around() {
 	const auto width = ofGetWidth();
 	const auto height = ofGetHeight();
+	const auto buffer = DRAW_RADIUS + DRAW_STROKE;
 
-	if (location.x < -DRAW_RADIUS) {
-		location.x = width + DRAW_RADIUS;
+	if (location.x < -buffer) {
+		location.x = width + buffer;
 	}
-	if (location.y < -DRAW_RADIUS) {
-		location.y = height + DRAW_RADIUS;
+	if (location.y < -buffer) {
+		location.y = height + buffer;
 	}
-	if (location.x > width + DRAW_RADIUS) {
-		location.x = -DRAW_RADIUS;
+	if (location.x > width + buffer) {
+		location.x = -buffer;
 	}
-	if (location.y > height + DRAW_RADIUS) {
-		location.y = -DRAW_RADIUS;
+	if (location.y > height + buffer) {
+		location.y = -buffer;
 	}
 }
 
@@ -211,7 +212,7 @@ void Boid::draw() const {
 
 	if (params.get_are_beaks_visible()) {
 		// Length of boid's nose depends on radius and current velocity.
-		const auto noseLength = DRAW_RADIUS * 1.1 + 3 * velocity.length();
+		const auto noseLength = (DRAW_RADIUS / 2) + (2 * DRAW_RADIUS * velocity.length() / params.get_max_speed());
 		ofRotateZDeg(heading_in_degrees()); // Rotate coordinate system to its heading
 		ofDrawLine(0, 0, noseLength, 0); // Draw the "nose" stroke
 	}
@@ -221,7 +222,7 @@ void Boid::draw() const {
 
 	if (params.get_are_separation_lines_showing()) {
 
-		ofSetLineWidth(3);
+		ofSetLineWidth(1);
 		ofSetColor(ofColor::darkSlateGray); // Fill is this->color
 
 		for (auto boid_num : debug_boids) {

@@ -7,16 +7,16 @@ Parameters::Parameters() {
 
 	gui_panel.setup("Boid Parameters");
 	gui_panel.add(separation_radius.set("Separation Radius", 35, 10, 100));
-	gui_panel.add(cohesion_radius.set("Cohesion Radius", 200, 10, 500));
-	gui_panel.add(alignment_radius.set("Alignment Radius", 100, 10, 500));
+	gui_panel.add(cohesion_radius.set("Cohesion Radius", 150, 10, 400));
+	gui_panel.add(alignment_radius.set("Alignment Radius", 60, 10, 300));
 
-	gui_panel.add(mouse_seeking_multiplier.set("Mouse Seeker X", 0.25, 0, 3));
-	gui_panel.add(separation_multiplier.set("Separation X", 1.5, 0, 3));
-	gui_panel.add(cohesion_multiplier.set("Cohesion X", 0.9, 0, 3));
-	gui_panel.add(alignment_multiplier.set("Alignment X", 0.9, 0, 3));
+	gui_panel.add(mouse_seeking_multiplier.set("Mouse Seeker X", 0.25, 0, 2));
+	gui_panel.add(separation_multiplier.set("Separation X", 1.7, 0, 4));
+	gui_panel.add(cohesion_multiplier.set("Cohesion X", 0.9, 0, 2));
+	gui_panel.add(alignment_multiplier.set("Alignment X", 0.9, 0, 2));
 
-	gui_panel.add(max_force.set("Maximum Force", 0.15, 0.01, 0.5));
-	gui_panel.add(max_speed.set("Maximum Speed", 4, 1, 7));
+	gui_panel.add(max_force.set("Maximum Force", 0.075, 0.01, 0.3));
+	gui_panel.add(max_speed.set("Maximum Speed", 4, 1, 6));
 
 	gui_panel.add(are_separation_lines_showing.set("Show Separation Lines?", false));
 	gui_panel.add(is_wrap_around.set("Do Boids Wrap Around?", true));

@@ -13,8 +13,8 @@ class Boid
 	const float SLOW_APPROACH_RADIUS = 100;
 
 	/* Want bigger Boids? Tiny ones? */
-	const float DRAW_RADIUS = 5;
-	const float DRAW_STROKE = 2;
+	const float DRAW_RADIUS = 4;
+	const float DRAW_STROKE = 1;
 
 	/* Private Properties */
 	ofVec2f location;
