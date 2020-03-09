@@ -14,7 +14,7 @@ class Boid
 
 	/* Want bigger Boids? Tiny ones? */
 	const float DRAW_RADIUS = 4;
-	const float DRAW_STROKE = 1;
+	const float DRAW_STROKE = 2;
 
 	/* Private Properties */
 	ofVec2f location;
