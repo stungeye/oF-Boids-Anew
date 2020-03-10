@@ -6,17 +6,19 @@ Parameters::Parameters() {
 	randomize.addListener(this, &Parameters::randomize_parameters);
 
 	gui_panel.setup("Boid Parameters");
+
+	gui_panel.add(number_of_boids.set("Number of Boids", 300, 1, 1000));
 	gui_panel.add(separation_radius.set("Separation Radius", 35, 10, 100));
-	gui_panel.add(alignment_radius.set("Alignment Radius", 60, 10, 300));
-	gui_panel.add(cohesion_radius.set("Cohesion Radius", 150, 10, 400));
+	gui_panel.add(alignment_radius.set("Alignment Radius", 85, 10, 300));
+	gui_panel.add(cohesion_radius.set("Cohesion Radius", 130, 10, 400));
 
 	gui_panel.add(mouse_seeking_multiplier.set("Mouse Seeker X", 0.25, 0, 2));
-	gui_panel.add(separation_multiplier.set("Separation X", 1.7, 0, 4));
-	gui_panel.add(alignment_multiplier.set("Alignment X", 0.9, 0, 2));
-	gui_panel.add(cohesion_multiplier.set("Cohesion X", 0.9, 0, 2));
+	gui_panel.add(separation_multiplier.set("Separation X", 1.65, 0, 4));
+	gui_panel.add(alignment_multiplier.set("Alignment X", 0.95, 0, 2));
+	gui_panel.add(cohesion_multiplier.set("Cohesion X", 0.75, 0, 2));
 
 	gui_panel.add(max_force.set("Maximum Force", 0.075, 0.01, 0.3));
-	gui_panel.add(max_speed.set("Maximum Speed", 4, 1, 6));
+	gui_panel.add(max_speed.set("Maximum Speed", 4.5, 1, 6));
 
 	gui_panel.add(are_steering_behaviours_banded.set("Banded Behaviours?", false));
 	gui_panel.add(are_separation_lines_showing.set("Show Separation Lines?", false));
@@ -29,6 +31,10 @@ Parameters::Parameters() {
 
 void Parameters::draw() {
 	gui_panel.draw();
+}
+
+size_t Parameters::get_number_of_boids() const {
+	return number_of_boids;
 }
 
 int Parameters::get_separation_radius() const {

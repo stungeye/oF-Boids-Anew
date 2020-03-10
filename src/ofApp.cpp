@@ -4,28 +4,26 @@
 
 //--SETUP------------------------------------------------------------
 void ofApp::setup() {
-	ofHideCursor(); // Hide the OS mouse pointer.
 	ofBackground(ofColor::white); // Set a white background.
-
-	// Setup the Boids. The Mouser is built in the header file.
-	boids.reserve(NUMBER_OF_BOIDS);
-
-	for (auto i = 0; i < NUMBER_OF_BOIDS; ++i) {
-		boids.emplace_back(
-			ofRandomWidth(),
-			ofRandomHeight(),
-			ofColor::darkorange, // fill color
-			the_mouse, // the Mouser
-			boids, // the boids vector
-			params
-		);
-	}
+	populate_flock();
 }
+
 
 //--UPDATE------------------------------------------------------------
 void ofApp::update() {
 	// Update the mouse and the boids.
 	the_mouse.update();
+
+	if (params.get_number_of_boids() > boids.size()) {
+		populate_flock();
+	} else if (params.get_number_of_boids() < boids.size()) {
+		// Clear the entire flock and let it repopulate on the next update();
+		// Tried using .erase(boids.begin() + params.get_number_of_boids(), boids.end())
+		// Even though we're erasing from the end, erase() assumes shuffling might be
+		// required and therefore requires a move constructor. Without it the compile
+		// errors because Boid contains a reference to a Parameters object.
+		boids.clear();
+	}
 
 	if (params.get_is_wrap_around()) {
 		for (auto& boid : boids) {
@@ -64,5 +62,20 @@ void ofApp::keyReleased(int key) {
 		else {
 			ofHideCursor();
 		}
+	}
+}
+
+void ofApp::populate_flock() {
+	boids.reserve(params.get_number_of_boids());
+
+	for (auto i = 0; i < params.get_number_of_boids(); ++i) {
+		boids.emplace_back(
+			ofRandomWidth(),
+			ofRandomHeight(),
+			ofColor::darkorange, // fill color
+			the_mouse, // the Mouser
+			boids, // the boids vector
+			params
+		);
 	}
 }

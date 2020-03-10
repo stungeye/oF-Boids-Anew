@@ -6,6 +6,8 @@ class Parameters {
 	
 	ofxPanel gui_panel;
 
+	ofParameter<size_t> number_of_boids;
+
 	ofParameter<int> separation_radius;
 	ofParameter<int> cohesion_radius;
 	ofParameter<int> alignment_radius;
@@ -29,6 +31,8 @@ class Parameters {
 public:
 	Parameters();
 	void draw();
+
+	size_t get_number_of_boids() const;
 
 	int get_separation_radius() const;
 	int get_cohesion_radius() const;
