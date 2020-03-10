@@ -17,12 +17,12 @@ void ofApp::update() {
 	if (params.get_number_of_boids() > boids.size()) {
 		populate_flock();
 	} else if (params.get_number_of_boids() < boids.size()) {
-		// Clear the entire flock and let it repopulate on the next update();
-		// Tried using .erase(boids.begin() + params.get_number_of_boids(), boids.end())
-		// Even though we're erasing from the end, erase() assumes shuffling might be
-		// required and therefore requires a move constructor. Without it the compile
-		// errors because Boid contains a reference to a Parameters object.
-		boids.clear();
+		// Couldn't use .erase(boids.begin() + params.get_number_of_boids(), boids.end())
+		// Even though we're removing from the end, erase() assumes that shuffling might
+		// be required and therefore requires a Boid& Boid::operator=(const Boid& other)
+
+		// Instead we clear the entire flock and let it repopulate on the next update();
+		 boids.clear();
 	}
 
 	if (params.get_is_wrap_around()) {
@@ -68,7 +68,7 @@ void ofApp::keyReleased(int key) {
 void ofApp::populate_flock() {
 	boids.reserve(params.get_number_of_boids());
 
-	for (auto i = 0; i < params.get_number_of_boids(); ++i) {
+	for (auto i = boids.size(); i < params.get_number_of_boids(); ++i) {
 		boids.emplace_back(
 			ofRandomWidth(),
 			ofRandomHeight(),
@@ -76,6 +76,6 @@ void ofApp::populate_flock() {
 			the_mouse, // the Mouser
 			boids, // the boids vector
 			params
-		);
+			);
 	}
 }

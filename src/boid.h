@@ -24,7 +24,7 @@ class Boid
 	std::vector<int> debug_boids;
 	const Mouser& mouse;
 	const std::vector<Boid>& boids;
-	Parameters& params;
+	const Parameters& params;
 
 public:
 	Boid(float x, float y, ofColor color, const Mouser& m, const std::vector<Boid>& bs, Parameters& p);
