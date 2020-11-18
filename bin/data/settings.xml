@@ -1,3 +1,13 @@
 <?xml version="1.0"?>
 <Boid_Parameters>
+	<Number_of_Boids>735</Number_of_Boids>
+	<Separation_Radius>40</Separation_Radius>
+	<Alignment_Radius>97</Alignment_Radius>
+	<Cohesion_Radius>238</Cohesion_Radius>
+	<Mouse_Seeker_X>0.836024</Mouse_Seeker_X>
+	<Separation_X>2.21418</Separation_X>
+	<Alignment_X>0.893094</Alignment_X>
+	<Cohesion_X>1.30668</Cohesion_X>
+	<Maximum_Force>0.207443</Maximum_Force>
+	<Maximum_Speed>4.6198</Maximum_Speed>
 </Boid_Parameters>

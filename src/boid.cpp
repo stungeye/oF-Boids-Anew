@@ -258,6 +258,6 @@ ofVec2f Boid::get_velocity() const {
 
 float Boid::heading_in_degrees() const {
 	// The angle between the xAxis and the boid's velocity is:	
-	ofVec2f xAxis(1, 0);
-	return xAxis.angle(velocity);
+	const ofVec2f x_axis(1, 0);
+	return x_axis.angle(velocity);
 }
