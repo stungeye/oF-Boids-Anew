@@ -5,8 +5,7 @@
 #include "Parameters.h"
 #include <vector>
 
-class Boid
-{
+class Boid {
 	/* Play with these constants to tweak the seeking. */
 	const float MAX_SPEED = 5;
 	const float MAX_FORCE = 0.2;
@@ -19,7 +18,6 @@ class Boid
 	/* Private Properties */
 	ofVec2f location;
 	ofVec2f velocity;
-	ofVec2f acceleration;
 	ofColor color;
 	std::vector<int> debug_boids;
 	const Mouser& mouse;
