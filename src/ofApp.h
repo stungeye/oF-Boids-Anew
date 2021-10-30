@@ -8,21 +8,18 @@
 
 #include <vector>
 
-class ofApp : public ofBaseApp{
-	const int NUMBER_OF_BOIDS = 300;
+class ofApp : public ofBaseApp {
+public:
+	void setup() override;
+	void update() override;
+	void draw() override;
+	void keyReleased(int key) override;
 
-	// A vector of Boids and a Mouser.
+private:
+	void populate_flock();
+
 	std::vector<Boid> boids;
 	Mouser the_mouse;
 	Parameters params;
 	bool show_gui = true;
-
-	public:
-		void setup();
-		void update();
-		void draw();
-		void keyReleased(int key);
-	private:
-		void populate_flock();
 };
-
